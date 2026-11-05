@@ -1,0 +1,18 @@
+$ curl -i -X POST http://localhost:8000/predecir -H 'Content-Type: application/json' -d '{"ingreso_mensual":-100,"deuda_actual":500,"antiguedad_laboral":10,"monto_solicitado":4000,"plazo_meses":36}'
+HTTP/1.1 422 Unprocessable Entity
+date: Wed, 04 Nov 2026 07:53:00 GMT
+server: uvicorn
+content-length: 138
+content-type: application/json
+
+{"detail":[{"type":"greater_than","loc":["body","ingreso_mensual"],"msg":"Input should be greater than 0","input":-100,"ctx":{"gt":0.0}}]}
+
+$ curl -i -X POST http://localhost:8000/predecir -H 'Content-Type: application/json' -d '{"deuda_actual":500,"antiguedad_laboral":10,"monto_solicitado":4000,"plazo_meses":36}'
+HTTP/1.1 422 Unprocessable Entity
+date: Wed, 04 Nov 2026 07:53:00 GMT
+server: uvicorn
+content-length: 181
+content-type: application/json
+
+{"detail":[{"type":"missing","loc":["body","ingreso_mensual"],"msg":"Field required","input":{"deuda_actual":500,"antiguedad_laboral":10,"monto_solicitado":4000,"plazo_meses":36}}]}
+

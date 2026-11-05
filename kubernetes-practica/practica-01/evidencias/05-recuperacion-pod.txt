@@ -1,0 +1,13 @@
+$ kubectl get pods -l app=web -n practica1
+NAME                             READY   STATUS    RESTARTS   AGE
+web-deployment-578b67f69-9pb5k   1/1     Running   0          18s
+web-deployment-578b67f69-9vndk   1/1     Running   0          18s
+
+$ kubectl delete pod web-deployment-578b67f69-9pb5k -n practica1
+pod "web-deployment-578b67f69-9pb5k" deleted from practica1 namespace
+
+$ kubectl get pods -l app=web -n practica1
+NAME                             READY   STATUS    RESTARTS   AGE
+web-deployment-578b67f69-45gwz   1/1     Running   0          6s
+web-deployment-578b67f69-9vndk   1/1     Running   0          25s
+

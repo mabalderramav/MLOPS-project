@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cpu-pod
+  namespace: lab-resources
+spec:
+  containers:
+    - name: app
+      image: python:3.12-slim
+      command: ["python", "-c"]
+      args:
+        - |
+          while True:
+              pass
+      resources:
+        requests:
+          cpu: "100m" # Request 100 millicores of CPU
+        limits:
+          cpu: "200m"

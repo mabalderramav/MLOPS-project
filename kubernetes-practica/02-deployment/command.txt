@@ -1,0 +1,25 @@
+# Apply the deployment configuration to the Kubernetes cluster
+kubectl apply -f ./02-deployment/deployment.yaml
+
+# Verify the deployment by listing and describing the pods
+kubectl get pods # List all pods to verify the deployment
+# List all pods with the label app=hello to verify the deployment
+kubectl get pods -l app=hello
+
+# Describe a specific pod to get detailed information about its status and configuration
+kubectl describe pod <pod_name> # Describe a specific pod to get detailed information
+
+# Get the specific deployment to verify its status
+kubectl get deployment hello-deployment
+
+# Get detailed information about the pods with the label app=hello
+kubectl get pods -l app=hello -o wide
+
+# Watch the pods with the label app=hello for real-time updates
+kubectl get pods -l app=hello -w
+
+# Scale the deployment to 6 replicas
+kubectl scale deployment hello-deployment --replicas=3
+
+# Verify the deletion of the deployment by listing the deployments
+kubectl delete deployment hello-deployment

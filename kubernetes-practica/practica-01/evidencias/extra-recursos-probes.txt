@@ -1,0 +1,62 @@
+$ kubectl apply -f ./practica-01/deployment-final.yaml
+deployment.apps/web-deployment configured
+
+$ kubectl annotate deployment/web-deployment kubernetes.io/change-cause="Recursos y pruebas de salud" --overwrite -n practica1
+deployment.apps/web-deployment annotated
+
+$ kubectl rollout status deployment/web-deployment -n practica1 --timeout=180s
+Waiting for deployment "web-deployment" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web-deployment" rollout to finish: 1 old replicas are pending termination...
+deployment "web-deployment" successfully rolled out
+
+$ kubectl get deployment web-deployment -n practica1
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+web-deployment   3/3     3            3           2m3s
+
+$ kubectl get pods -l app=web -n practica1
+NAME                             READY   STATUS    RESTARTS   AGE
+web-deployment-748c8f948-87klh   1/1     Running   0          46s
+web-deployment-748c8f948-g6tjh   1/1     Running   0          53s
+web-deployment-748c8f948-hzqfd   1/1     Running   0          39s
+
+$ kubectl describe pod web-deployment-748c8f948-87klh -n practica1 | grep -E '^Name:|Image:|Ready:|Restart Count|Limits:|Requests:|cpu:|memory:|Liveness:|Readiness:|QoS'
+Name:             web-deployment-748c8f948-87klh
+    Image:          nginx:alpine
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     200m
+      memory:  128Mi
+    Requests:
+      cpu:        50m
+      memory:     32Mi
+    Liveness:     http-get http://:80/ delay=10s timeout=1s period=10s #success=1 #failure=3
+    Readiness:    http-get http://:80/ delay=2s timeout=1s period=5s #success=1 #failure=3
+QoS Class:                   Burstable
+
+$ kubectl top pods -l app=web -n practica1
+NAME                             CPU(cores)   MEMORY(bytes)   
+web-deployment-748c8f948-87klh   1m           18Mi            
+web-deployment-748c8f948-g6tjh   1m           18Mi            
+web-deployment-748c8f948-hzqfd   1m           18Mi            
+
+$ kubectl rollout history deployment/web-deployment -n practica1
+deployment.apps/web-deployment 
+REVISION  CHANGE-CAUSE
+2         Actualización a nginx:stable-alpine
+3         Reversión a nginx:alpine
+4         Recursos y pruebas de salud
+
+
+$ curl -s -I --max-time 10 http://localhost:31446 | grep -E "HTTP|Server"
+HTTP/1.1 200 OK
+Server: nginx/1.31.8
+

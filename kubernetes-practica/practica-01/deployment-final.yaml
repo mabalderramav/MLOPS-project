@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  namespace: practica1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          resources:
+            requests: # Reserva mínima usada para programar el Pod
+              cpu: "50m"
+              memory: "32Mi"
+            limits: # Máximo que puede consumir el contenedor
+              cpu: "200m"
+              memory: "128Mi"
+          readinessProbe: # Si falla, el Pod deja de recibir tráfico del Service
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe: # Si falla repetidamente, se reinicia el contenedor
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3

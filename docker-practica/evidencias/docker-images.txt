@@ -1,0 +1,2 @@
+IMAGE             ID             DISK USAGE   CONTENT SIZE   EXTRA
+credito-api:1.0   02dc82bc30f7        602MB          140MB        

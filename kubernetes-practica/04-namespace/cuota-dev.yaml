@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ResourceQuota # Defines the resource type as a ResourceQuota
+metadata:
+  name: cuota-dev # Name of the resource quota
+  namespace: dev # Namespace to which the resource quota applies
+spec: # Specification of the resource quota
+  hard: # Hard limits for the resources
+    pods: "2" # Maximum number of pods allowed

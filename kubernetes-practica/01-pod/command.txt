@@ -1,0 +1,16 @@
+# This command applies the pod configuration specified in the pod.yaml file.
+kubectl apply -f ./01-pod/pod.yaml
+# This command retrieves detailed information about all pods in the cluster.
+kubectl get pods -o wide
+# This command retrieves detailed information about the specific pod named 'hola'.
+kubectl describe pod hola
+
+# This command forwards a local port to the port on the pod named 'hola'.
+# Now you can access the pod's service at http://localhost:8080
+kubectl port-forward pod/hola 8080:5678
+
+# This command retrieves the logs of the pod named 'hola'.
+kubectl logs pod/hola
+
+# This command deletes the pod named 'hola'.
+kubectl delete pod hola

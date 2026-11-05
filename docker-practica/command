@@ -1,0 +1,4 @@
+# Construir la imagen Docker para la API de crédito
+docker build -t credito-api:1.0 .
+# Ejecutar el contenedor de la API de crédito
+docker run -d -p 8000:8000 --name credito credito-api:1.0

@@ -1,0 +1,30 @@
+$ kubectl get all -n practica1
+NAME                                 READY   STATUS    RESTARTS   AGE
+pod/web-deployment-748c8f948-87klh   1/1     Running   0          47s
+pod/web-deployment-748c8f948-g6tjh   1/1     Running   0          54s
+pod/web-deployment-748c8f948-hzqfd   1/1     Running   0          40s
+
+NAME                  TYPE       CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
+service/web-service   NodePort   10.43.89.72   <none>        80:31446/TCP   2m
+
+NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/web-deployment   3/3     3            3           2m5s
+
+NAME                                        DESIRED   CURRENT   READY   AGE
+replicaset.apps/web-deployment-578b67f69    0         0         0       2m5s
+replicaset.apps/web-deployment-748c8f948    3         3         3       54s
+replicaset.apps/web-deployment-7f46cb8679   0         0         0       88s
+
+$ kubectl delete namespace practica1
+namespace "practica1" deleted
+
+$ kubectl get namespace
+NAME              STATUS   AGE
+default           Active   4h17m
+kube-node-lease   Active   4h17m
+kube-public       Active   4h17m
+kube-system       Active   4h17m
+
+$ kubectl get all -n practica1
+No resources found in practica1 namespace.
+

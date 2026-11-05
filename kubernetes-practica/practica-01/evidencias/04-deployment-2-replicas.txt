@@ -1,0 +1,63 @@
+$ kubectl apply -f ./practica-01/deployment.yaml
+deployment.apps/web-deployment created
+
+$ kubectl rollout status deployment/web-deployment -n practica1 --timeout=120s
+Waiting for deployment "web-deployment" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "web-deployment" rollout to finish: 1 of 2 updated replicas are available...
+deployment "web-deployment" successfully rolled out
+
+$ kubectl get deployment web-deployment -n practica1
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+web-deployment   2/2     2            2           5s
+
+$ kubectl get pods -l app=web -n practica1 -o wide
+NAME                             READY   STATUS    RESTARTS   AGE   IP           NODE                NOMINATED NODE   READINESS GATES
+web-deployment-578b67f69-9pb5k   1/1     Running   0          5s    10.42.0.12   k3d-local-agent-2   <none>           <none>
+web-deployment-578b67f69-9vndk   1/1     Running   0          5s    10.42.3.14   k3d-local-agent-0   <none>           <none>
+
+$ kubectl apply -f ./practica-01/service.yaml
+service/web-service created
+
+$ kubectl describe service web-service -n practica1
+Name:                     web-service
+Namespace:                practica1
+Labels:                   <none>
+Annotations:              <none>
+Selector:                 app=web
+Type:                     NodePort
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.43.89.72
+IPs:                      10.43.89.72
+Port:                     <unset>  80/TCP
+TargetPort:               80/TCP
+NodePort:                 <unset>  31446/TCP
+Endpoints:                10.42.3.14:80,10.42.0.12:80
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Internal Traffic Policy:  Cluster
+Events:                   <none>
+
+$ kubectl get endpointslices -l kubernetes.io/service-name=web-service -n practica1
+NAME                ADDRESSTYPE   PORTS   ENDPOINTS               AGE
+web-service-v8h89   IPv4          80      10.42.3.14,10.42.0.12   2s
+
+$ curl -i -s --max-time 10 http://localhost:31446 | head -9
+HTTP/1.1 200 OK
+Server: nginx/1.31.8
+Date: Thu, 05 Nov 2026 21:28:05 GMT
+Content-Type: text/html
+Content-Length: 896
+Last-Modified: Wed, 21 Oct 2026 17:54:44 GMT
+Connection: keep-alive
+ETag: "6ad8fc64-380"
+Accept-Ranges: bytes
+
+$ for i in $(seq 1 30); do curl -s -o /dev/null --max-time 5 -w "%{http_code}
+" http://localhost:31446; done | sort | uniq -c
+     30 200
+
+$ kubectl logs -l app=web -n practica1 --prefix --tail=-1 | grep 'GET /' | grep -v kube-probe | awk '{print $1}' | sort | uniq -c
+     16 [pod/web-deployment-578b67f69-9pb5k/web]
+     15 [pod/web-deployment-578b67f69-9vndk/web]
+

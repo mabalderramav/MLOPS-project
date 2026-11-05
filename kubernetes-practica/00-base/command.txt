@@ -1,0 +1,2 @@
+# This command creates a Kubernetes cluster using k3d with the configuration specified in the base.yml file.
+k3d cluster create --config ./00-base/base.yaml

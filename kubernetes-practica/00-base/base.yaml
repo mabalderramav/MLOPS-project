@@ -1,0 +1,65 @@
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: local
+image: rancher/k3s:v1.35.4-rc2-k3s1
+servers: 1
+agents: 3
+ports:
+  - port: 80:80 # http
+    nodeFilters:
+      - loadbalancer
+  - port: 443:443 # https
+    nodeFilters:
+      - loadbalancer
+  - port: 20001:20001 #kiali
+    nodeFilters:
+      - loadbalancer
+  - port: 5001:5001 #
+    nodeFilters:
+      - loadbalancer
+  - port: 5002:5002 #
+    nodeFilters:
+      - loadbalancer
+  - port: 31446:31446
+    nodeFilters:
+      - agent:0
+      - agent:1
+      - agent:2
+    #  - agent:3
+options:
+  k3d:
+    wait: true
+    timeout: "60s"
+    disableLoadbalancer: false
+    loadbalancer:
+      configOverrides:
+        - settings.workerConnections=2048
+  k3s:
+    extraArgs:
+      - arg: --disable=traefik
+        nodeFilters:
+          - server:*
+      - arg: --tls-san=my.host.domain
+        nodeFilters:
+          - server:*
+    nodeLabels:
+      - label: node=system
+        nodeFilters:
+          - agent:0
+      - label: node=workloads
+        nodeFilters:
+          - agent:1
+      - label: node=workloads
+        nodeFilters:
+          - agent:2
+  kubeconfig:
+    updateDefaultKubeconfig: true
+    switchCurrentContext: true
+  runtime:
+    ulimits:
+      - name: nofile
+        soft: 26677
+        hard: 26677
+
+# export K3D_FIX_DNS=1

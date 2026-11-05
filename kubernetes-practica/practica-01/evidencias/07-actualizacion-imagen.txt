@@ -1,0 +1,37 @@
+$ kubectl annotate deployment/web-deployment kubernetes.io/change-cause="Despliegue inicial con nginx:alpine" -n practica1
+deployment.apps/web-deployment annotated
+
+$ kubectl set image deployment/web-deployment web=nginx:stable-alpine -n practica1
+deployment.apps/web-deployment image updated
+
+$ kubectl annotate deployment/web-deployment kubernetes.io/change-cause="Actualización a nginx:stable-alpine" --overwrite -n practica1
+deployment.apps/web-deployment annotated
+
+$ kubectl rollout status deployment/web-deployment -n practica1 --timeout=180s
+Waiting for deployment "web-deployment" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web-deployment" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web-deployment" rollout to finish: 1 old replicas are pending termination...
+deployment "web-deployment" successfully rolled out
+
+$ kubectl get deployment web-deployment -n practica1 -o jsonpath='{.spec.template.spec.containers[0].image}{"
+"}'
+nginx:stable-alpine
+
+$ kubectl rollout history deployment/web-deployment -n practica1
+deployment.apps/web-deployment 
+REVISION  CHANGE-CAUSE
+1         Despliegue inicial con nginx:alpine
+2         Actualización a nginx:stable-alpine
+
+
+$ curl -s -I --max-time 10 http://localhost:31446 | grep -E "HTTP|Server"
+HTTP/1.1 200 OK
+Server: nginx/1.30.6
+

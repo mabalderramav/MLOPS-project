@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-basico
+  namespace: practica1
+  labels:
+    app: web-basico # Distinta de app=web para que el Service no seleccione este Pod
+spec:
+  containers:
+    - name: web
+      image: nginx:alpine
+      ports:
+        - containerPort: 80

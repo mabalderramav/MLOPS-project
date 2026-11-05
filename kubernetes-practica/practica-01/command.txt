@@ -1,0 +1,81 @@
+# Ejecutar desde la raíz del repositorio. Cada bloque corresponde a una fase del plan.
+
+# ----- Fase 1: verificar el entorno y crear el namespace -----
+kubectl version
+kubectl cluster-info
+kubectl get nodes
+kubectl apply -f ./practica-01/namespace.yaml
+kubectl get namespace practica1
+
+# ----- Fase 2: Pod independiente -----
+kubectl apply -f ./practica-01/pod.yaml
+kubectl get pods -n practica1
+kubectl describe pod web-basico -n practica1
+
+# Terminal 1 (queda en primer plano; detener con Ctrl+C)
+kubectl port-forward pod/web-basico 8080:80 -n practica1
+# Terminal 2, o el navegador en http://localhost:8080
+curl -i http://localhost:8080
+
+# Un Pod independiente no se vuelve a crear
+kubectl delete pod web-basico -n practica1
+kubectl get pods -n practica1
+
+# ----- Fase 3: Deployment y Service -----
+kubectl apply -f ./practica-01/deployment.yaml
+kubectl rollout status deployment/web-deployment -n practica1
+kubectl get deployment web-deployment -n practica1
+kubectl get pods -l app=web -n practica1 -o wide
+
+kubectl apply -f ./practica-01/service.yaml
+kubectl describe service web-service -n practica1
+kubectl get endpointslices -l kubernetes.io/service-name=web-service -n practica1
+curl -i http://localhost:31446
+
+# Enviar 30 solicitudes y contar cuántas recibió cada Pod
+for i in $(seq 1 30); do curl -s -o /dev/null http://localhost:31446; done
+kubectl logs -l app=web -n practica1 --prefix --tail=-1 | grep 'GET /' | grep -v kube-probe | awk '{print $1}' | sort | uniq -c
+
+# ----- Fase 4: recuperación automática -----
+kubectl get pods -l app=web -n practica1
+kubectl delete pod <nombre-de-un-pod> -n practica1
+kubectl get pods -l app=web -n practica1
+
+# ----- Fase 5: escalamiento -----
+kubectl scale deployment/web-deployment --replicas=5 -n practica1
+kubectl rollout status deployment/web-deployment -n practica1
+kubectl get pods -l app=web -n practica1 -o wide
+
+kubectl scale deployment/web-deployment --replicas=3 -n practica1
+kubectl get deployment web-deployment -n practica1
+kubectl get pods -l app=web -n practica1
+
+# ----- Fase 6: actualización y reversión -----
+kubectl annotate deployment/web-deployment kubernetes.io/change-cause="Despliegue inicial con nginx:alpine" -n practica1
+
+kubectl set image deployment/web-deployment web=nginx:stable-alpine -n practica1
+kubectl annotate deployment/web-deployment kubernetes.io/change-cause="Actualización a nginx:stable-alpine" --overwrite -n practica1
+kubectl rollout status deployment/web-deployment -n practica1
+kubectl get deployment web-deployment -n practica1 -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
+kubectl rollout history deployment/web-deployment -n practica1
+
+kubectl rollout undo deployment/web-deployment -n practica1
+kubectl rollout status deployment/web-deployment -n practica1
+kubectl annotate deployment/web-deployment kubernetes.io/change-cause="Reversión a nginx:alpine" --overwrite -n practica1
+kubectl get deployment web-deployment -n practica1 -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
+kubectl rollout history deployment/web-deployment -n practica1
+
+# ----- Fase 7: recursos y pruebas de salud -----
+kubectl apply -f ./practica-01/deployment-final.yaml
+kubectl annotate deployment/web-deployment kubernetes.io/change-cause="Recursos y pruebas de salud" --overwrite -n practica1
+kubectl rollout status deployment/web-deployment -n practica1
+kubectl get pods -l app=web -n practica1
+kubectl describe pod <nombre-de-un-pod> -n practica1
+kubectl top pods -l app=web -n practica1
+curl -i http://localhost:31446
+
+# ----- Fase 8: limpieza -----
+kubectl get all -n practica1
+kubectl delete namespace practica1
+kubectl get namespace
+kubectl get all -n practica1

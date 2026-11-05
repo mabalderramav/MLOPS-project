@@ -1,0 +1,9 @@
+$ curl -i -X POST http://localhost:8000/predecir -H 'Content-Type: application/json' -d '{"ingreso_mensual":800,"deuda_actual":6000,"antiguedad_laboral":0.5,"monto_solicitado":15000,"plazo_meses":12}'
+HTTP/1.1 200 OK
+date: Wed, 04 Nov 2026 07:53:00 GMT
+server: uvicorn
+content-length: 71
+content-type: application/json
+
+{"moroso":1,"probabilidad":0.9733333333333334,"version_modelo":"1.0.0"}
+

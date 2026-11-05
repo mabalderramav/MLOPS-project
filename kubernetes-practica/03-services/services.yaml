@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service # Kind of the Kubernetes resource
+metadata: # Metadata of the service
+  name: hello-service # Name of the service
+spec: # Specification of the service
+  selector: # Selector to match the pods
+    app: hello # Label to match the pods with the app=hello label
+  ports: # List of ports exposed by the service
+    - protocol: TCP # Protocol used by the service
+      port: 80 # Port exposed by the service
+      targetPort: 5678 # Port on the pod to which the traffic is directed
+  # type: ClusterIP # Type of the service (ClusterIP, NodePort, LoadBalancer, etc.)

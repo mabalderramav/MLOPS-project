@@ -1,0 +1,43 @@
+$ kubectl rollout undo deployment/web-deployment -n practica1
+Warning: resource deployments/web-deployment was previously managed with 'kubectl apply'. Rolling back will not update the kubectl.kubernetes.io/last-applied-configuration annotation, which may cause unexpected behavior on future 'kubectl apply' operations. Consider using 'kubectl apply' with your previous configuration file instead.
+deployment.apps/web-deployment rolled back
+
+$ kubectl rollout status deployment/web-deployment -n practica1 --timeout=180s
+Waiting for deployment "web-deployment" rollout to finish: 0 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "web-deployment" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web-deployment" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "web-deployment" rollout to finish: 1 old replicas are pending termination...
+deployment "web-deployment" successfully rolled out
+
+$ kubectl annotate deployment/web-deployment kubernetes.io/change-cause="Reversión a nginx:alpine" --overwrite -n practica1
+deployment.apps/web-deployment annotated
+
+$ kubectl get deployment web-deployment -n practica1 -o jsonpath='{.spec.template.spec.containers[0].image}{"
+"}'
+nginx:alpine
+
+$ kubectl rollout history deployment/web-deployment -n practica1
+deployment.apps/web-deployment 
+REVISION  CHANGE-CAUSE
+2         Actualización a nginx:stable-alpine
+3         Reversión a nginx:alpine
+
+
+$ curl -s -I --max-time 10 http://localhost:31446 | grep -E "HTTP|Server"
+HTTP/1.1 200 OK
+Server: nginx/1.31.8
+
+$ kubectl get pods -l app=web -n practica1
+NAME                              READY   STATUS      RESTARTS   AGE
+web-deployment-578b67f69-6psql    1/1     Running     0          2s
+web-deployment-578b67f69-dkwf5    1/1     Running     0          4s
+web-deployment-578b67f69-rw6vm    1/1     Running     0          3s
+web-deployment-7f46cb8679-nt58j   0/1     Completed   0          10s
+

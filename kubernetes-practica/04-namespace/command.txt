@@ -1,0 +1,27 @@
+# Apply the namespace configurations to the Kubernetes cluster
+kubectl apply -f ./04-namespace/namespaces.yaml
+
+# List all namespaces to verify the applied configurations
+kubectl get namespaces
+
+# Apply the application configuration for the dev namespace
+kubectl apply -f ./04-namespace/app.yaml -n dev
+
+# Apply the application configuration for the prod namespace
+kubectl apply -f ./04-namespace/app.yaml -n prod
+
+# List all pods in the dev namespace to verify the applied application configuration
+kubectl get pods -n dev
+
+# List all pods in the prod namespace to verify the applied application configuration
+kubectl get pods -n prod
+
+# Delete the application deployment in the prod namespace
+kubectl delete deployment hello-deployment -n dev
+
+# Apply the resource quota for the dev namespace
+kubectl apply -f ./04-namespace/cuota-dev.yaml
+
+# Delete the resource quota for the dev namespace
+kubectl delete namespace dev prod
+

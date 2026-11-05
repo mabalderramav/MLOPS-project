@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment # Defines the resource type as a Deployment
+metadata:
+  name: hello-deployment # Name of the deployment
+spec:
+  replicas: 3 # Number of pod replicas to create for this deployment
+  selector: # Selector to identify the pods managed by this deployment
+    matchLabels:
+      app: hello
+  template: # Template for the pods managed by this deployment
+    metadata: # Metadata for the pod template
+      labels: # Labels for the pod template
+        app: hello # Label to identify the application within the pod template
+    spec: # Specification of the pod's desired behavior
+      containers: # List of containers within the pod
+        - name: web # Name of the container
+          image: hashicorp/http-echo:1.0 # Container image to use
+          env: # Environment variables for the container
+            - name: POD_NAME # Name of the environment variable containing the pod's name
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name # Path to the pod's name in the metadata
+          args: ["-text", "Hello from $(POD_NAME)"] # Arguments to pass to the container, using the pod's name
+          ports: # List of ports to expose from the container
+            - containerPort: 5678 # Port number the container listens on

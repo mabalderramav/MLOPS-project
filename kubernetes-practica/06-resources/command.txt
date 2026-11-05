@@ -1,0 +1,32 @@
+# Apply the namespace configuration
+kubectl apply -f ./06-resources/namespace.yaml
+
+# Apply the pending pod configuration
+kubectl apply -f ./06-resources/a-pending.yaml
+
+# Apply the CPU pod configuration
+kubectl apply -f ./06-resources/c-cpu.yaml
+
+# Apply the OOM pod configuration
+kubectl apply -f ./06-resources/b-omm.yaml
+
+# Apply all configurations
+kubectl get pods -n lab-resources -o wide
+
+# Describe the CPU pod
+kubectl describe pod pending-pod -n lab-resources
+
+# get pods and watch for changes
+kubectl get pods -n lab-resources -w
+
+kubectl top pod cpu-pod -n lab-resources
+
+kubectl describe pod c-cpu -n lab-resources
+
+# Describe the OOM pod
+kubectl describe pod b-omm -n lab-resources
+
+# Delete all resources in the namespace before deleting the namespace itself
+kubectl delete namespace lab-resources
+
+

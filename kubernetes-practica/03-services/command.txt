@@ -1,0 +1,14 @@
+# Apply the deployment configuration to the Kubernetes cluster
+kubectl apply -f ./03-services/deployment.yaml
+
+# Verify the deployment by listing the pods with the label app=hello in wide format
+kubectl get pods -l app=hello -o wide
+
+# Apply the service configuration to the Kubernetes cluster
+kubectl apply -f ./03-services/services.yaml
+
+# Verify the service by listing all services
+kubectl get services
+
+# Delete the deployment and service configurations from the Kubernetes cluster
+kubectl delete -f ./03-services/deployment.yaml -f ./03-services/services.yaml

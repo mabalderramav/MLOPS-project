@@ -1,0 +1,34 @@
+$ kubectl scale deployment/web-deployment --replicas=5 -n practica1
+deployment.apps/web-deployment scaled
+
+$ kubectl rollout status deployment/web-deployment -n practica1 --timeout=120s
+Waiting for deployment "web-deployment" rollout to finish: 2 of 5 updated replicas are available...
+Waiting for deployment "web-deployment" rollout to finish: 3 of 5 updated replicas are available...
+Waiting for deployment "web-deployment" rollout to finish: 4 of 5 updated replicas are available...
+deployment "web-deployment" successfully rolled out
+
+$ kubectl get deployment web-deployment -n practica1
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+web-deployment   5/5     5            5           30s
+
+$ kubectl get pods -l app=web -n practica1 -o wide
+NAME                             READY   STATUS    RESTARTS   AGE   IP           NODE                 NOMINATED NODE   READINESS GATES
+web-deployment-578b67f69-45gwz   1/1     Running   0          12s   10.42.0.13   k3d-local-agent-2    <none>           <none>
+web-deployment-578b67f69-9vndk   1/1     Running   0          31s   10.42.3.14   k3d-local-agent-0    <none>           <none>
+web-deployment-578b67f69-g6bbh   1/1     Running   0          6s    10.42.3.15   k3d-local-agent-0    <none>           <none>
+web-deployment-578b67f69-gv5n2   1/1     Running   0          6s    10.42.4.11   k3d-local-agent-1    <none>           <none>
+web-deployment-578b67f69-shbnw   1/1     Running   0          6s    10.42.1.6    k3d-local-server-0   <none>           <none>
+
+$ kubectl scale deployment/web-deployment --replicas=3 -n practica1
+deployment.apps/web-deployment scaled
+
+$ kubectl get deployment web-deployment -n practica1
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+web-deployment   3/3     3            3           36s
+
+$ kubectl get pods -l app=web -n practica1
+NAME                             READY   STATUS    RESTARTS   AGE
+web-deployment-578b67f69-45gwz   1/1     Running   0          18s
+web-deployment-578b67f69-gv5n2   1/1     Running   0          12s
+web-deployment-578b67f69-shbnw   1/1     Running   0          12s
+
