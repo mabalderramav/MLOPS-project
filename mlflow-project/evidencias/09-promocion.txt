@@ -1,0 +1,23 @@
+--- estado inicial
+adult-api-5b9b8fd664-ggwxh v2 a44a07aa727849ef9ba3021fcaa20ecd
+adult-api-5b9b8fd664-sv8pj v2 a44a07aa727849ef9ba3021fcaa20ecd
+adult-api-5b9b8fd664-z6znk v2 a44a07aa727849ef9ba3021fcaa20ecd
+$ mover alias production a v1
+production -> v1
+(sin reiniciar, los pods siguen sirviendo la versión en memoria)
+adult-api-5b9b8fd664-ggwxh v2 a44a07aa727849ef9ba3021fcaa20ecd
+adult-api-5b9b8fd664-sv8pj v2 a44a07aa727849ef9ba3021fcaa20ecd
+adult-api-5b9b8fd664-z6znk v2 a44a07aa727849ef9ba3021fcaa20ecd
+$ kubectl rollout restart deployment/adult-api -n mlops
+deployment.apps/adult-api restarted
+deployment "adult-api" successfully rolled out
+adult-api-5dc56595c6-2lb4p v1 c171aa9083da4fc79e5a342fae52f1fd
+adult-api-5dc56595c6-fgzdd v1 c171aa9083da4fc79e5a342fae52f1fd
+adult-api-5dc56595c6-hhsf9 v1 c171aa9083da4fc79e5a342fae52f1fd
+$ volver: alias production a v2 y rollout restart
+production -> v2
+deployment.apps/adult-api restarted
+deployment "adult-api" successfully rolled out
+adult-api-f694c4bb6-bnnws v2 a44a07aa727849ef9ba3021fcaa20ecd
+adult-api-f694c4bb6-g6h9p v2 a44a07aa727849ef9ba3021fcaa20ecd
+adult-api-f694c4bb6-sfrhd v2 a44a07aa727849ef9ba3021fcaa20ecd

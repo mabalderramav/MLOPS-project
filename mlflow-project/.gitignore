@@ -1,0 +1,10 @@
+datos/
+lotes/
+backups/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+mlruns/
+mlartifacts/
+.DS_Store

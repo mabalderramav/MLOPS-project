@@ -1,0 +1,25 @@
+$ kubectl get pods (antes)
+NAME                               READY   STATUS     RESTARTS  AGE    NODE
+adult-api-f694c4bb6-bnnws          1/1     Running    0         31s    k3d-local-agent-1
+adult-api-f694c4bb6-g6h9p          1/1     Running    0         38s    k3d-local-agent-0
+adult-api-f694c4bb6-sfrhd          1/1     Running    0         44s    k3d-local-agent-2
+
+$ scripts/probe_loop.sh 40  # en segundo plano, peticiones continuas
+
+$ kubectl delete pod adult-api-f694c4bb6-bnnws -n mlops
+pod "adult-api-f694c4bb6-bnnws" deleted from mlops namespace
+
+$ kubectl get pods (recién borrado)
+NAME                               READY   STATUS     RESTARTS  AGE    NODE
+adult-api-f694c4bb6-g6h9p          1/1     Running    0         49s    k3d-local-agent-0
+adult-api-f694c4bb6-h672l          0/1     Running    0         6s     k3d-local-server-0
+adult-api-f694c4bb6-sfrhd          1/1     Running    0         55s    k3d-local-agent-2
+
+$ kubectl get pods (después)
+NAME                               READY   STATUS     RESTARTS  AGE    NODE
+adult-api-f694c4bb6-g6h9p          1/1     Running    0         78s    k3d-local-agent-0
+adult-api-f694c4bb6-h672l          1/1     Running    0         35s    k3d-local-server-0
+adult-api-f694c4bb6-sfrhd          1/1     Running    0         84s    k3d-local-agent-2
+
+--- resultado de probe_loop.sh (exit 0)
+Peticiones: 288 | Fallidas: 0

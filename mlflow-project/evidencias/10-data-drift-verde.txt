@@ -1,0 +1,15 @@
+$ python revisar_data_drift.py --lote lotes/mismo_origen.csv
+variable        prueba         estadistico  alerta si   estado
+age             KS (p-valor)         0.642  p < 0.05    verde
+capital_gain    KS (p-valor)             1  p < 0.05    verde
+capital_loss    KS (p-valor)             1  p < 0.05    verde
+hours_per_week  KS (p-valor)         0.895  p < 0.05    verde
+workclass       PSI                 0.0113  PSI > 0.25  verde
+education       PSI                 0.0173  PSI > 0.25  verde
+marital_status  PSI                 0.0142  PSI > 0.25  verde
+occupation      PSI                 0.0132  PSI > 0.25  verde
+relationship    PSI                0.00476  PSI > 0.25  verde
+
+ESTADO: VERDE. Ninguna variable supera su umbral.
+Acción sin alarma de la métrica: todo bien
+(exit 0)

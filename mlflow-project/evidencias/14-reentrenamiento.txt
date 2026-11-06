@@ -1,0 +1,12 @@
+$ python reentrenar.py
+2026/11/05 20:08:32 WARNING mlflow.utils.environment: Failed to resolve installed pip version. ``pip`` will be added to conda.yaml environment spec without a version specifier.
+2026/11/05 20:08:32 WARNING mlflow.tracking._model_registry.fluent: Run with id 4a1565e88328424e8d1c3424f47551c5 has no artifacts at artifact path 'modelo', registering model based on models:/m-97d78d6d3966474485da738f6761a526 instead
+{
+  "filas_entrenamiento_regla_nueva": 4000,
+  "filas_evaluacion": 2645,
+  "viejo_produccion": 0.7370791341991342,
+  "mezclado": 0.748915670995671,
+  "nuevo_solo_regla_nueva": 0.9169710822510823
+}
+candidato -> v3; production sigue en v2
+(exit 0)

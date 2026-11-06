@@ -1,0 +1,8 @@
+{
+  "lotes": 300,
+  "tamano_lote": 1000,
+  "tasa_ks": 0.02,
+  "tasa_psi": 0.0,
+  "tasa_total": 0.02,
+  "psi_maximo_en_lotes_limpios": 0.04302544048085622
+}

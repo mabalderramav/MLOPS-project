@@ -1,0 +1,24 @@
+$ python revisar_concept_drift.py --escenario regla_nueva
+Modelo: models:/adult-income-classifier@production -> v2 run=a44a07aa727849ef9ba3021fcaa20ecd
+Referencia: mu=0.9190 sigma=0.0092 umbral=0.8890 (mu - max(2 sigma, 0.03)), sostenido 3 lotes
+
+lote  regla nueva  roc_auc  accuracy  err/ref  data drift  bajo umbral
+   1           0%    0.906     0.840     1.22       False        False
+   2           0%    0.915     0.855     1.10       False        False
+   3           0%    0.896     0.833     1.27       False        False
+   4           0%    0.917     0.872     0.97       False        False
+   5          25%    0.850     0.808     1.46       False         True
+   6          50%    0.819     0.742     1.96       False         True
+   7          75%    0.773     0.694     2.33       False         True
+   8         100%    0.735     0.629     2.82       False         True
+   9         100%    0.761     0.623     2.87       False         True
+  10         100%    0.740     0.630     2.82       False         True
+  11         100%    0.739     0.633     2.79       False         True
+  12         100%    0.728     0.615     2.93       False         True
+
+Data drift sostenido: no
+Alarma de la métrica: lote 7
+Contraste, error > 2x referencia (regla del notebook): lote 7
+Con etiquetas retrasadas k lotes, la alarma se conoce en: k=0: lote 7, k=3: lote 10, k=6: lote 13
+ACCIÓN: REENTRENAR
+(exit 1)

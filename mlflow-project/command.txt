@@ -1,0 +1,98 @@
+# Ejecutar desde mlflow-project/. Cada bloque corresponde a una fase del plan.
+
+# ----- Fase 0: entorno -----
+uv venv --python 3.12 ~/.venvs/mlflow-project
+source ~/.venvs/mlflow-project/bin/activate
+uv pip install -r requirements.txt
+kubectl apply -f k8s/namespace.yaml
+kubectl get ns mlops
+
+# Regenerar las versiones fijadas, solo si cambia un requirements.in
+uv pip compile --python-version 3.12 --no-header --no-annotate requirements.in -o requirements.txt
+uv pip compile --python-version 3.12 --no-header --no-annotate servicio/requirements.in -o servicio/requirements.txt
+uv pip compile --python-version 3.12 --no-header --no-annotate ui/requirements.in -o ui/requirements.txt
+
+# ----- Fase 1: MLflow -----
+kubectl apply -f k8s/mlflow.yaml
+kubectl rollout status deployment/mlflow -n mlops
+kubectl get pods,svc,pvc -n mlops
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost:5001/health
+export MLFLOW_TRACKING_URI=http://localhost:5001
+
+# ----- Fase 2: modelo y experimentación -----
+python -m pytest
+python entrenar.py
+python registrar.py
+
+# ----- Fase 3: servicio y Docker -----
+docker build -t adult-api:0.1.0 servicio/
+docker run --rm -p 8000:8000 \
+  --add-host=host.docker.internal:host-gateway \
+  -e MLFLOW_TRACKING_URI=http://host.docker.internal:5001 \
+  adult-api:0.1.0
+# En otra terminal
+curl -s localhost:8000/ready
+curl -s localhost:8000/info
+curl -s -X POST localhost:8000/predecir -H 'Content-Type: application/json' -d @scripts/solicitud.json
+
+# ----- Fase 4: Kubernetes -----
+k3d image import adult-api:0.1.0 -c local
+kubectl apply -f k8s/api.yaml
+kubectl rollout status deployment/adult-api -n mlops
+
+# Demostración 1: réplicas
+kubectl get deployment adult-api -n mlops
+kubectl get pods -n mlops -l app=adult-api -o wide
+
+# Demostración 2: reparto de tráfico
+scripts/demo_balanceo.sh 60
+
+# Demostración 3: autorreparación
+scripts/probe_loop.sh 40
+# En otra terminal, mientras corre
+kubectl delete pod <nombre-de-un-pod> -n mlops
+kubectl get pods -n mlops -l app=adult-api -o wide
+
+# Demostración 4: escalado
+kubectl scale deployment/adult-api --replicas=5 -n mlops
+kubectl get pods -n mlops -l app=adult-api -o wide
+scripts/demo_balanceo.sh 100
+kubectl scale deployment/adult-api --replicas=3 -n mlops
+
+# Promoción: mover el alias a v1, reiniciar, comprobar y volver a v2
+python -c "from mlflow import MlflowClient as C; C().set_registered_model_alias('adult-income-classifier', 'production', '1')"
+kubectl rollout restart deployment/adult-api -n mlops
+kubectl rollout status deployment/adult-api -n mlops
+curl -s localhost:31446/info
+python -c "from mlflow import MlflowClient as C; C().set_registered_model_alias('adult-income-classifier', 'production', '2')"
+kubectl rollout restart deployment/adult-api -n mlops
+kubectl rollout status deployment/adult-api -n mlops
+curl -s localhost:31446/info
+
+# ----- Fase 5: data drift -----
+python generar_lotes.py
+python revisar_data_drift.py --lote lotes/mismo_origen.csv; echo "exit $?"
+python revisar_data_drift.py --lote lotes/verano.csv; echo "exit $?"
+python revisar_data_drift.py --falsas-alarmas 300
+
+# ----- Fase 6: concept drift y reentrenamiento -----
+python revisar_concept_drift.py --escenario estable; echo "exit $?"
+python revisar_concept_drift.py --escenario verano; echo "exit $?"
+python revisar_concept_drift.py --escenario regla_nueva; echo "exit $?"
+python revisar_concept_drift.py --escenario verano_fuerte; echo "exit $?"
+python reentrenar.py
+
+# ----- Fase 7: UI -----
+docker build -t adult-ui:0.1.0 ui/
+k3d image import adult-ui:0.1.0 -c local
+kubectl apply -f k8s/ui.yaml
+kubectl rollout status deployment/adult-ui -n mlops
+# Abrir http://localhost:5002 y enviar el formulario varias veces
+kubectl logs -n mlops -l app=adult-api --prefix --tail=20 | grep 'POST /predecir'
+
+# ----- Fase 8: copia de seguridad, antes de cualquier cambio riesgoso -----
+scripts/backup_mlflow.sh
+scripts/restaurar_mlflow.sh backups/<archivo>.tar.gz
+
+# ----- Limpieza: SOLO después de la defensa. Borra el registro de MLflow. -----
+kubectl delete namespace mlops

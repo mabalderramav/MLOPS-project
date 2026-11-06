@@ -1,0 +1,74 @@
+[
+  {
+    "variable": "age",
+    "tipo": "numerica",
+    "prueba": "KS (p-valor)",
+    "estadistico": 1.9320875135080373e-23,
+    "umbral": 0.05,
+    "drift": true
+  },
+  {
+    "variable": "capital_gain",
+    "tipo": "numerica",
+    "prueba": "KS (p-valor)",
+    "estadistico": 0.3359744893083454,
+    "umbral": 0.05,
+    "drift": false
+  },
+  {
+    "variable": "capital_loss",
+    "tipo": "numerica",
+    "prueba": "KS (p-valor)",
+    "estadistico": 0.9997933433530356,
+    "umbral": 0.05,
+    "drift": false
+  },
+  {
+    "variable": "hours_per_week",
+    "tipo": "numerica",
+    "prueba": "KS (p-valor)",
+    "estadistico": 0.270225063671518,
+    "umbral": 0.05,
+    "drift": false
+  },
+  {
+    "variable": "workclass",
+    "tipo": "categorica",
+    "prueba": "PSI",
+    "estadistico": 0.04489164990973325,
+    "umbral": 0.25,
+    "drift": false
+  },
+  {
+    "variable": "education",
+    "tipo": "categorica",
+    "prueba": "PSI",
+    "estadistico": 0.09971780021876223,
+    "umbral": 0.25,
+    "drift": false
+  },
+  {
+    "variable": "marital_status",
+    "tipo": "categorica",
+    "prueba": "PSI",
+    "estadistico": 0.03821718106857451,
+    "umbral": 0.25,
+    "drift": false
+  },
+  {
+    "variable": "occupation",
+    "tipo": "categorica",
+    "prueba": "PSI",
+    "estadistico": 0.29888255792607343,
+    "umbral": 0.25,
+    "drift": true
+  },
+  {
+    "variable": "relationship",
+    "tipo": "categorica",
+    "prueba": "PSI",
+    "estadistico": 0.03404634904300531,
+    "umbral": 0.25,
+    "drift": false
+  }
+]

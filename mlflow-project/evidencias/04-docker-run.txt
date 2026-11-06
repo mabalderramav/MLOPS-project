@@ -1,0 +1,29 @@
+$ docker build -t adult-api:0.1.0 servicio/
+sha256:f06b35ee07fdc637804b902dccbaf4a824fbb64bfc4131eaac68489b918f4a87
+adult-api:0.1.0 808MB
+
+$ grep -E "mlflow|scikit" servicio/requirements.txt
+mlflow-skinny==3.14.0
+scikit-learn==1.9.0
+
+$ docker run -d -p 8000:8000 --add-host=host.docker.internal:host-gateway -e MLFLOW_TRACKING_URI=http://host.docker.internal:5001 adult-api:0.1.0
+300ada172b247c8c1985131641b487ff819efc74a6752a91d8c2c44187384670
+listo tras 8 s
+
+$ curl -s localhost:8000/ready
+{"status":"ready"}
+
+$ curl -s localhost:8000/info
+{"modelo":"adult-income-classifier","alias":"production","version_modelo":"2","run_id":"a44a07aa727849ef9ba3021fcaa20ecd","model_uri":"models:/adult-income-classifier@production","cargado":true,"pod":"300ada172b24"}
+
+$ curl -s -X POST localhost:8000/predecir -d @scripts/solicitud.json
+{"prediccion":1,"probabilidad":0.7278718549650317,"modelo":"adult-income-classifier","version_modelo":"2","run_id":"a44a07aa727849ef9ba3021fcaa20ecd","pod":"300ada172b24"}
+
+$ curl -s -X POST localhost:8000/predecir (edad inválida)
+HTTP 422
+
+$ docker exec adult-api-prueba id
+uid=1000(appuser) gid=1000(appuser) groups=1000(appuser)
+
+$ docker logs adult-api-prueba (filtrado)
+2026-11-06 00:01:30,129 INFO Modelo cargado: adult-income-classifier v2 run=a44a07aa727849ef9ba3021fcaa20ecd

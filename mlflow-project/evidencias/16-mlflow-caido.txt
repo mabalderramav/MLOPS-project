@@ -1,0 +1,29 @@
+$ kubectl scale deployment/mlflow --replicas=0 -n mlops  # MLflow caído
+deployment.apps/mlflow scaled
+POST /predecir -> HTTP 200
+POST /predecir -> HTTP 200
+POST /predecir -> HTTP 200
+
+$ kubectl delete pod adult-api-f694c4bb6-mzwl5 -n mlops  # el reemplazo no puede cargar el modelo
+pod "adult-api-f694c4bb6-mzwl5" deleted from mlops namespace
+NAME                               READY   STATUS     RESTARTS
+adult-api-f694c4bb6-6nhd9          0/1     Running    0
+adult-api-f694c4bb6-sfrhd          1/1     Running    0
+adult-api-f694c4bb6-tmcd5          1/1     Running    0
+
+--- el servicio sigue respondiendo con los otros dos pods
+POST /predecir -> HTTP 200
+POST /predecir -> HTTP 200
+POST /predecir -> HTTP 200
+
+$ kubectl exec adult-api-f694c4bb6-6nhd9 -- GET /ready
+HTTP 503 {"detail":{"status":"cargando","error":null}}
+
+$ kubectl scale deployment/mlflow --replicas=1 -n mlops  # MLflow vuelve
+deployment.apps/mlflow scaled
+deployment "mlflow" successfully rolled out
+deployment "adult-api" successfully rolled out
+NAME                               READY   STATUS     RESTARTS
+adult-api-f694c4bb6-6nhd9          1/1     Running    0
+adult-api-f694c4bb6-sfrhd          1/1     Running    0
+adult-api-f694c4bb6-tmcd5          1/1     Running    0

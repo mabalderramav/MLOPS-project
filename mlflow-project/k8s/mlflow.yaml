@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mlflow-data
+  namespace: mlops
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+  namespace: mlops
+  labels:
+    app: mlflow
+spec:
+  replicas: 1
+  # El volumen es ReadWriteOnce y SQLite admite un solo escritor.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+        - name: mlflow
+          image: ghcr.io/mlflow/mlflow:v3.14.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - mlflow
+            - server
+            - --backend-store-uri=sqlite:////mlflow/mlflow.db
+            - --artifacts-destination=/mlflow/artifacts
+            - --serve-artifacts
+            - --host=0.0.0.0
+            - --port=5000
+            - --workers=1
+            - --allowed-hosts=localhost:5001,127.0.0.1:5001,mlflow:5001,host.docker.internal:5001
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: datos
+              mountPath: /mlflow
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+          # Las probes usan TCP porque --allowed-hosts valida el encabezado Host.
+          startupProbe:
+            tcpSocket:
+              port: 5000
+            periodSeconds: 5
+            failureThreshold: 36
+          readinessProbe:
+            tcpSocket:
+              port: 5000
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 5000
+            periodSeconds: 20
+            failureThreshold: 3
+      volumes:
+        - name: datos
+          persistentVolumeClaim:
+            claimName: mlflow-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow
+  namespace: mlops
+spec:
+  type: LoadBalancer
+  selector:
+    app: mlflow
+  ports:
+    - port: 5001
+      targetPort: 5000

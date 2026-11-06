@@ -1,0 +1,19 @@
+{
+  "escenario": "verano",
+  "modelo": "models:/adult-income-classifier@production",
+  "version": "2",
+  "run_id": "a44a07aa727849ef9ba3021fcaa20ecd",
+  "mu": 0.9190136371100102,
+  "sigma": 0.00921855640841135,
+  "umbral": 0.8890136371100101,
+  "lotes_sostenidos": 3,
+  "lote_alarma": null,
+  "lote_data_drift_sostenido": 3,
+  "lote_regla_notebook": null,
+  "alarma_con_retraso": {
+    "0": null,
+    "3": null,
+    "6": null
+  },
+  "accion": "vigilar"
+}

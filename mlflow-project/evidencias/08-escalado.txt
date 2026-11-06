@@ -1,0 +1,29 @@
+$ kubectl scale deployment/adult-api --replicas=5 -n mlops
+deployment.apps/adult-api scaled
+deployment "adult-api" successfully rolled out
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+adult-api   5/5     5            5           3m22s
+NAME                               READY   STATUS     RESTARTS  AGE    NODE
+adult-api-f694c4bb6-8bccx          1/1     Running    0         10s    k3d-local-server-0
+adult-api-f694c4bb6-g6h9p          1/1     Running    0         88s    k3d-local-agent-0
+adult-api-f694c4bb6-h672l          1/1     Running    0         45s    k3d-local-server-0
+adult-api-f694c4bb6-mzwl5          1/1     Running    0         10s    k3d-local-agent-1
+adult-api-f694c4bb6-sfrhd          1/1     Running    0         94s    k3d-local-agent-2
+
+$ scripts/demo_balanceo.sh 100
+Enviando 100 peticiones a http://localhost:31446/predecir
+14 peticiones -> adult-api-f694c4bb6-8bccx
+22 peticiones -> adult-api-f694c4bb6-g6h9p
+26 peticiones -> adult-api-f694c4bb6-h672l
+16 peticiones -> adult-api-f694c4bb6-mzwl5
+22 peticiones -> adult-api-f694c4bb6-sfrhd
+
+$ kubectl scale deployment/adult-api --replicas=3 -n mlops
+deployment.apps/adult-api scaled
+deployment "adult-api" successfully rolled out
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+adult-api   3/3     3            3           3m38s
+NAME                               READY   STATUS     RESTARTS  AGE    NODE
+adult-api-f694c4bb6-g6h9p          1/1     Running    0         104s   k3d-local-agent-0
+adult-api-f694c4bb6-mzwl5          1/1     Running    0         26s    k3d-local-agent-1
+adult-api-f694c4bb6-sfrhd          1/1     Running    0         110s   k3d-local-agent-2

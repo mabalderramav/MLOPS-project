@@ -1,0 +1,15 @@
+$ python revisar_data_drift.py --lote lotes/verano.csv
+variable        prueba         estadistico  alerta si   estado
+age             KS (p-valor)      1.93e-23  p < 0.05    ROJO
+capital_gain    KS (p-valor)         0.336  p < 0.05    verde
+capital_loss    KS (p-valor)             1  p < 0.05    verde
+hours_per_week  KS (p-valor)          0.27  p < 0.05    verde
+workclass       PSI                 0.0449  PSI > 0.25  verde
+education       PSI                 0.0997  PSI > 0.25  verde
+marital_status  PSI                 0.0382  PSI > 0.25  verde
+occupation      PSI                  0.299  PSI > 0.25  ROJO
+relationship    PSI                  0.034  PSI > 0.25  verde
+
+ESTADO: ROJO. Variables con drift: age, occupation
+Acción sin alarma de la métrica: vigilar
+(exit 1)

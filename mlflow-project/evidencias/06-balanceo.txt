@@ -1,0 +1,10 @@
+$ scripts/demo_balanceo.sh 60
+Enviando 60 peticiones a http://localhost:31446/predecir
+21 peticiones -> adult-api-f694c4bb6-g6h9p
+19 peticiones -> adult-api-f694c4bb6-mzwl5
+20 peticiones -> adult-api-f694c4bb6-sfrhd
+$ kubectl get pods -n mlops -o wide
+NAME                               READY   STATUS     NODE
+adult-api-f694c4bb6-g6h9p          1/1     Running    k3d-local-agent-0
+adult-api-f694c4bb6-mzwl5          1/1     Running    k3d-local-agent-1
+adult-api-f694c4bb6-sfrhd          1/1     Running    k3d-local-agent-2

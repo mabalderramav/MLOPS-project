@@ -1,0 +1,9 @@
+$ kubectl get deployment adult-api -n mlops
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+adult-api   3/3     3            3           2m32s
+
+$ kubectl get pods -n mlops -l app=adult-api -o wide
+NAME                               READY   STATUS     RESTARTS  AGE    NODE
+adult-api-f694c4bb6-bnnws          1/1     Running    0         31s    k3d-local-agent-1
+adult-api-f694c4bb6-g6h9p          1/1     Running    0         38s    k3d-local-agent-0
+adult-api-f694c4bb6-sfrhd          1/1     Running    0         44s    k3d-local-agent-2
